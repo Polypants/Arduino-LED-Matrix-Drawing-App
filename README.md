@@ -1,0 +1,1 @@
+![what it looks like](https://raw.githubusercontent.com/Polypants/Arduino-LED-Matrix-Drawing-App/whatitlookslike.jpg)
