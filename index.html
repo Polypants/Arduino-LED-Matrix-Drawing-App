@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>LED Project</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"
+  ></script>
+  <script>
+    $(document).ready(function() {
+      var socket = io();
+      var selectedColour = '000000';
+      var isMouseDown = false;
+      var cursor = document.getElementById('cursor');
+      var LEDsToUpdate = [];
+
+      setInterval(function() {
+        if (LEDsToUpdate.length > 0) {
+          var LEDToUpdate = LEDsToUpdate.shift();
+          console.log(LEDToUpdate);
+          socket.emit('colorUpdate', {data: LEDToUpdate});
+        }
+      }, 50);
+
+      var pixels = document.getElementsByClassName('pixelGrid_pixel');
+      [].forEach.call(pixels, function (pixel) {
+        pixel.addEventListener("mouseenter", function(e) {
+          if (isMouseDown) {
+            e.target.style.backgroundColor = '#' + selectedColour;
+            // socket.emit('colorUpdate', {data: selectedColour + e.target.dataset.location});
+            LEDsToUpdate.push(selectedColour + e.target.dataset.location);
+          }
+        });
+        pixel.addEventListener("mousedown", function(e) {
+          e.target.style.backgroundColor = '#' + selectedColour;
+          // socket.emit('colorUpdate', {data: selectedColour + e.target.dataset.location});
+          LEDsToUpdate.push(selectedColour + e.target.dataset.location);
+        });
+      });
+
+      window.addEventListener("mousedown", function() {
+        isMouseDown = true;
+      });
+      window.addEventListener("mouseup", function() {
+        isMouseDown = false;
+      });
+      window.addEventListener("mousemove", function(e) {
+        cursor.style.transform = 'translate(' + (e.clientX - 15) + 'px, ' + (e.clientY - 15) + 'px)';
+      });
+
+      document.getElementById('colourPicker_red').addEventListener("click", function() {
+        selectedColour = 'FF0000';
+        cursor.style.backgroundColor = '#FF0000';
+      });
+      document.getElementById('colourPicker_orange').addEventListener("click", function() {
+        selectedColour = 'FF8000';
+        cursor.style.backgroundColor = '#FF8000';
+      });
+      document.getElementById('colourPicker_yellow').addEventListener("click", function() {
+        selectedColour = 'FFFF00';
+        cursor.style.backgroundColor = '#FFFF00';
+      });
+      document.getElementById('colourPicker_yellowGreen').addEventListener("click", function() {
+        selectedColour = '80FF00';
+        cursor.style.backgroundColor = '#80FF00';
+      });
+      document.getElementById('colourPicker_green').addEventListener("click", function() {
+        selectedColour = '00FF00';
+        cursor.style.backgroundColor = '#00FF00';
+      });
+      document.getElementById('colourPicker_greenCyan').addEventListener("click", function() {
+        selectedColour = '00FF80';
+        cursor.style.backgroundColor = '#00FF80';
+      });
+      document.getElementById('colourPicker_cyan').addEventListener("click", function() {
+        selectedColour = '00FFFF';
+        cursor.style.backgroundColor = '#00FFFF';
+      });
+      document.getElementById('colourPicker_cyanBlue').addEventListener("click", function() {
+        selectedColour = '0080FF';
+        cursor.style.backgroundColor = '#0080FF';
+      });
+      document.getElementById('colourPicker_blue').addEventListener("click", function() {
+        selectedColour = '0000FF';
+        cursor.style.backgroundColor = '#0000FF';
+      });
+      document.getElementById('colourPicker_purple').addEventListener("click", function() {
+        selectedColour = '8000FF';
+        cursor.style.backgroundColor = '#8000FF';
+      });
+      document.getElementById('colourPicker_magenta').addEventListener("click", function() {
+        selectedColour = 'FF00FF';
+        cursor.style.backgroundColor = '#FF00FF';
+      });
+      document.getElementById('colourPicker_magentaRed').addEventListener("click", function() {
+        selectedColour = 'FF0080';
+        cursor.style.backgroundColor = '#FF0080';
+      });
+    });
+  </script>
+  <style>
+    * {
+      cursor: crosshair;
+    }
+    body {
+      margin: 0;
+    }
+    .cursor {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 31px;
+      width: 31px;
+      background-color: black;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+      box-sizing: border-box;
+      border: 2px solid white;
+    }
+    .pixelGrid {
+      position: absolute;
+      left: 50%;
+      top: 50px;
+      transform: translateX(-50%);
+      display: grid;
+      grid-row-gap: 3px;
+    }
+    .pixelGrid_row {
+      width: 595px;
+      height: 85px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-column-gap: 3px;
+    }
+    .pixelGrid_pixel {
+      height: 100%;
+      width: 100%;
+      background-color: black;
+      border-radius: 3px;
+    }
+    .colourPicker {
+      width: 800px;
+      height: 50px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-column-gap: 15px;
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .colourPicker_colour {
+      height: 100%;
+      width: 100%;
+      cursor: pointer;
+    }
+    .colourPicker_red {
+      background-color: rgb(255, 0, 0);
+    }
+    .colourPicker_orange {
+      background-color: rgb(255, 128, 0);
+    }
+    .colourPicker_yellow {
+      background-color: rgb(255, 255, 0);
+    }
+    .colourPicker_yellowGreen {
+      background-color: rgb(128, 255, 0);
+    }
+    .colourPicker_green {
+      background-color: rgb(0, 255, 0);
+    }
+    .colourPicker_greenCyan {
+      background-color: rgb(0, 255, 128);
+    }
+    .colourPicker_cyan {
+      background-color: rgb(0, 255, 255);
+    }
+    .colourPicker_cyanBlue {
+      background-color: rgb(0, 128, 255);
+    }
+    .colourPicker_blue {
+      background-color: rgb(0, 0, 255);
+    }
+    .colourPicker_purple {
+      background-color: rgb(128, 0, 255);
+    }
+    .colourPicker_magenta {
+      background-color: rgb(255, 0, 255);
+    }
+    .colourPicker_magentaRed {
+      background-color: rgb(255, 0, 128);
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor" class="cursor"></div>
+  <div class="pixelGrid">
+    <div class="pixelGrid_row">
+      <div data-location="42" class="pixelGrid_pixel"></div>
+      <div data-location="43" class="pixelGrid_pixel"></div>
+      <div data-location="44" class="pixelGrid_pixel"></div>
+      <div data-location="45" class="pixelGrid_pixel"></div>
+      <div data-location="46" class="pixelGrid_pixel"></div>
+      <div data-location="47" class="pixelGrid_pixel"></div>
+      <div data-location="48" class="pixelGrid_pixel"></div>
+    </div>
+    <div class="pixelGrid_row">
+      <div data-location="41" data-location="" class="pixelGrid_pixel"></div>
+      <div data-location="40" class="pixelGrid_pixel"></div>
+      <div data-location="39" class="pixelGrid_pixel"></div>
+      <div data-location="38" class="pixelGrid_pixel"></div>
+      <div data-location="37" class="pixelGrid_pixel"></div>
+      <div data-location="36" class="pixelGrid_pixel"></div>
+      <div data-location="35" class="pixelGrid_pixel"></div>
+    </div>
+    <div class="pixelGrid_row">
+      <div data-location="28" class="pixelGrid_pixel"></div>
+      <div data-location="29" class="pixelGrid_pixel"></div>
+      <div data-location="30" class="pixelGrid_pixel"></div>
+      <div data-location="31" class="pixelGrid_pixel"></div>
+      <div data-location="32" class="pixelGrid_pixel"></div>
+      <div data-location="33" class="pixelGrid_pixel"></div>
+      <div data-location="34" class="pixelGrid_pixel"></div>
+    </div>
+    <div class="pixelGrid_row">
+      <div data-location="27" class="pixelGrid_pixel"></div>
+      <div data-location="26" class="pixelGrid_pixel"></div>
+      <div data-location="25" class="pixelGrid_pixel"></div>
+      <div data-location="24" class="pixelGrid_pixel"></div>
+      <div data-location="23" class="pixelGrid_pixel"></div>
+      <div data-location="22" class="pixelGrid_pixel"></div>
+      <div data-location="21" class="pixelGrid_pixel"></div>
+    </div>
+    <div class="pixelGrid_row">
+      <div data-location="14" class="pixelGrid_pixel"></div>
+      <div data-location="15" class="pixelGrid_pixel"></div>
+      <div data-location="16" class="pixelGrid_pixel"></div>
+      <div data-location="17" class="pixelGrid_pixel"></div>
+      <div data-location="18" class="pixelGrid_pixel"></div>
+      <div data-location="19" class="pixelGrid_pixel"></div>
+      <div data-location="20" class="pixelGrid_pixel"></div>
+    </div>
+    <div class="pixelGrid_row">
+      <div data-location="13" class="pixelGrid_pixel"></div>
+      <div data-location="12" class="pixelGrid_pixel"></div>
+      <div data-location="11" class="pixelGrid_pixel"></div>
+      <div data-location="10" class="pixelGrid_pixel"></div>
+      <div data-location="09" class="pixelGrid_pixel"></div>
+      <div data-location="08" class="pixelGrid_pixel"></div>
+      <div data-location="07" class="pixelGrid_pixel"></div>
+    </div>
+    <div class="pixelGrid_row">
+      <div data-location="00" class="pixelGrid_pixel"></div>
+      <div data-location="01" class="pixelGrid_pixel"></div>
+      <div data-location="02" class="pixelGrid_pixel"></div>
+      <div data-location="03" class="pixelGrid_pixel"></div>
+      <div data-location="04" class="pixelGrid_pixel"></div>
+      <div data-location="05" class="pixelGrid_pixel"></div>
+      <div data-location="06" class="pixelGrid_pixel"></div>
+    </div>
+  </div>
+  <div class="colourPicker">
+    <div id="colourPicker_red" class="colourPicker_red colourPicker_colour"></div>
+    <div id="colourPicker_orange" class="colourPicker_orange colourPicker_colour"></div>
+    <div id="colourPicker_yellow" class="colourPicker_yellow colourPicker_colour"></div>
+    <div id="colourPicker_yellowGreen" class="colourPicker_yellowGreen colourPicker_colour"></div>
+    <div id="colourPicker_green" class="colourPicker_green colourPicker_colour"></div>
+    <div id="colourPicker_greenCyan" class="colourPicker_greenCyan colourPicker_colour"></div>
+    <div id="colourPicker_cyan" class="colourPicker_cyan colourPicker_colour"></div>
+    <div id="colourPicker_cyanBlue" class="colourPicker_cyanBlue colourPicker_colour"></div>
+    <div id="colourPicker_blue" class="colourPicker_blue colourPicker_colour"></div>
+    <div id="colourPicker_purple" class="colourPicker_purple colourPicker_colour"></div>
+    <div id="colourPicker_magenta" class="colourPicker_magenta colourPicker_colour"></div>
+    <div id="colourPicker_magentaRed" class="colourPicker_magentaRed colourPicker_colour"></div>
+  </div>
+</body>
+</html>
